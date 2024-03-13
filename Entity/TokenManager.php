@@ -20,22 +20,13 @@ use FOS\OAuthServerBundle\Model\TokenManager as BaseTokenManager;
 
 class TokenManager extends BaseTokenManager
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
+    protected EntityManagerInterface $em;
 
-    /**
-     * @var EntityRepository
-     */
-    protected $repository;
+    protected EntityRepository $repository;
 
-    /**
-     * @var string
-     */
-    protected $class;
+    protected string $class;
 
-    public function __construct(EntityManagerInterface $em, $class)
+    public function __construct(EntityManagerInterface $em, string $class)
     {
         // NOTE: bug in Doctrine, hinting EntityRepository|ObjectRepository when only EntityRepository is expected
         /** @var EntityRepository $repository */
@@ -49,7 +40,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
@@ -57,7 +48,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function findTokenBy(array $criteria)
+    public function findTokenBy(array $criteria): ?TokenInterface
     {
         return $this->repository->findOneBy($criteria);
     }
@@ -65,7 +56,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function updateToken(TokenInterface $token)
+    public function updateToken(TokenInterface $token): void
     {
         $this->em->persist($token);
         $this->em->flush();
@@ -74,7 +65,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function deleteToken(TokenInterface $token)
+    public function deleteToken(TokenInterface $token): void
     {
         $this->em->remove($token);
         $this->em->flush();
@@ -83,7 +74,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function deleteExpired()
+    public function deleteExpired(): int
     {
         $qb = $this->repository->createQueryBuilder('t');
         $qb

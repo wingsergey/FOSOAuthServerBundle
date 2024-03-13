@@ -20,22 +20,13 @@ use FOS\OAuthServerBundle\Model\ClientManager as BaseClientManager;
 
 class ClientManager extends BaseClientManager
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
+    protected EntityManagerInterface $em;
+    
+    protected EntityRepository $repository;
+    
+    protected string $class;
 
-    /**
-     * @var EntityRepository
-     */
-    protected $repository;
-
-    /**
-     * @var string
-     */
-    protected $class;
-
-    public function __construct(EntityManagerInterface $em, $class)
+    public function __construct(EntityManagerInterface $em, string $class)
     {
         // NOTE: bug in Doctrine, hinting EntityRepository|ObjectRepository when only EntityRepository is expected
         /** @var EntityRepository $repository */
@@ -46,35 +37,23 @@ class ClientManager extends BaseClientManager
         $this->class = $class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function findClientBy(array $criteria)
+    public function findClientBy(array $criteria): ?ClientInterface
     {
         return $this->repository->findOneBy($criteria);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function updateClient(ClientInterface $client)
+    public function updateClient(ClientInterface $client): void
     {
         $this->em->persist($client);
         $this->em->flush();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteClient(ClientInterface $client)
+    public function deleteClient(ClientInterface $client): void
     {
         $this->em->remove($client);
         $this->em->flush();

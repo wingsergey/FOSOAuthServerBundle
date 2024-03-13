@@ -22,14 +22,14 @@ use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface
 
 class OAuthEntryPoint implements AuthenticationEntryPointInterface
 {
-    protected $serverService;
+    protected OAuth2 $serverService;
 
     public function __construct(OAuth2 $serverService)
     {
         $this->serverService = $serverService;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
         $exception = new OAuth2AuthenticateException(
             Response::HTTP_UNAUTHORIZED,

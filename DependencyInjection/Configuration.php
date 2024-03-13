@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('fos_oauth_server');
         $rootNode = $treeBuilder->getRootNode();
@@ -83,7 +83,7 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    private function addAuthorizeSection(ArrayNodeDefinition $node)
+    private function addAuthorizeSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()
@@ -109,7 +109,7 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-    private function addServiceSection(ArrayNodeDefinition $node)
+    private function addServiceSection(ArrayNodeDefinition $node): void
     {
         $node
             ->addDefaultsIfNotSet()

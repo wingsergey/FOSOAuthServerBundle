@@ -19,20 +19,9 @@ use FOS\OAuthServerBundle\Model\AuthCodeManager as BaseAuthCodeManager;
 
 class AuthCodeManager extends BaseAuthCodeManager
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-
-    /**
-     * @var string
-     */
-    protected $class;
-
-    /**
-     * @param string $class
-     */
-    public function __construct(EntityManagerInterface $em, $class)
+    protected EntityManagerInterface $em;
+    protected string $class;
+    public function __construct(EntityManagerInterface $em, string $class)
     {
         $this->em = $em;
         $this->class = $class;
@@ -41,7 +30,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
@@ -49,7 +38,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function findAuthCodeBy(array $criteria)
+    public function findAuthCodeBy(array $criteria): ?AuthCodeInterface
     {
         return $this->em->getRepository($this->class)->findOneBy($criteria);
     }
@@ -57,7 +46,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function updateAuthCode(AuthCodeInterface $authCode)
+    public function updateAuthCode(AuthCodeInterface $authCode): void
     {
         $this->em->persist($authCode);
         $this->em->flush();
@@ -66,7 +55,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function deleteAuthCode(AuthCodeInterface $authCode)
+    public function deleteAuthCode(AuthCodeInterface $authCode): void
     {
         $this->em->remove($authCode);
         $this->em->flush();
@@ -75,7 +64,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function deleteExpired()
+    public function deleteExpired(): int
     {
         /** @var \Doctrine\ORM\EntityRepository $repository */
         $repository = $this->em->getRepository($this->class);

@@ -29,36 +29,31 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  */
 class OAuthListener
 {
-    /**
-     * @var TokenStorageInterface
-     */
-    protected $tokenStorage;
+    protected TokenStorageInterface $tokenStorage;
 
-    /**
-     * @var AuthenticationManagerInterface
-     */
-    protected $authenticationManager;
+    protected AuthenticationManagerInterface $authenticationManager;
 
-    /**
-     * @var OAuth2
-     */
-    protected $serverService;
+    protected OAuth2 $serverService;
 
     /**
      * @param TokenStorageInterface          $tokenStorage          the token storage
      * @param AuthenticationManagerInterface $authenticationManager the authentication manager
      */
-    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, OAuth2 $serverService)
-    {
+    public function __construct(
+        TokenStorageInterface $tokenStorage,
+        AuthenticationManagerInterface $authenticationManager,
+        OAuth2 $serverService
+    ) {
         $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
         $this->serverService = $serverService;
     }
 
-    public function __invoke(RequestEvent $event)
+    public function __invoke(RequestEvent $event): ?TokenInterface
     {
+        global $previousException;
         if (null === $oauthToken = $this->serverService->getBearerToken($event->getRequest(), true)) {
-            return;
+            return null;
         }
 
         $token = new OAuthToken();
@@ -75,9 +70,13 @@ class OAuthListener
                 return $event->setResponse($returnValue);
             }
         } catch (AuthenticationException $e) {
-            if (null !== $p = $e->getPrevious()) {
-                $event->setResponse($p->getHttpResponse());
+            $previousException = $e->getPrevious();
+
+            if (null !== $previousException) {
+                $event->setResponse($previousException->getHttpResponse());
             }
         }
+
+        return null;
     }
 }

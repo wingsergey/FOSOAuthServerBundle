@@ -28,13 +28,13 @@ class FOSOAuthServerBundle extends Bundle
         $this->extension = new FOSOAuthServerExtension();
     }
 
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
 
         /** @var SecurityExtension $extension */
         $extension = $container->getExtension('security');
-        $extension->addSecurityListenerFactory(new OAuthFactory());
+        $extension->addAuthenticatorFactory(new OAuthFactory());
 
         $container->addCompilerPass(new GrantExtensionsCompilerPass());
         $container->addCompilerPass(new RequestStackCompilerPass());

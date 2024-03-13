@@ -18,30 +18,15 @@ use OAuth2\OAuth2;
 
 class Client implements ClientInterface
 {
-    /**
-     * @var int
-     */
-    protected $id;
+    protected int $id;
 
-    /**
-     * @var string
-     */
-    protected $randomId;
+    protected string $randomId;
 
-    /**
-     * @var string
-     */
-    protected $secret;
+    protected string $secret;
 
-    /**
-     * @var array
-     */
-    protected $redirectUris = [];
+    protected array $redirectUris = [];
 
-    /**
-     * @var array
-     */
-    protected $allowedGrantTypes = [];
+    protected array $allowedGrantTypes = [];
 
     public function __construct()
     {
@@ -51,87 +36,57 @@ class Client implements ClientInterface
         $this->setSecret(Random::generateToken());
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setRandomId($random)
+    public function setRandomId(string $randomId): void
     {
-        $this->randomId = $random;
+        $this->randomId = $randomId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRandomId()
+    public function getRandomId(): string
     {
         return $this->randomId;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPublicId()
+    public function getPublicId(): string
     {
         return sprintf('%s_%s', $this->getId(), $this->getRandomId());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setSecret($secret)
+    public function setSecret(string $secret): void
     {
         $this->secret = $secret;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSecret()
+    public function getSecret(): string
     {
         return $this->secret;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function checkSecret($secret)
+    public function checkSecret(string $secret): bool
     {
         return null === $this->secret || $secret === $this->secret;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setRedirectUris(array $redirectUris)
+    public function setRedirectUris(array $redirectUris): void
     {
         $this->redirectUris = $redirectUris;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRedirectUris()
+    public function getRedirectUris(): array
     {
         return $this->redirectUris;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setAllowedGrantTypes(array $grantTypes)
+    public function setAllowedGrantTypes(array $grantTypes): void
     {
         $this->allowedGrantTypes = $grantTypes;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getAllowedGrantTypes()
+    public function getAllowedGrantTypes(): array
     {
         return $this->allowedGrantTypes;
     }

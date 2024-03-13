@@ -18,32 +18,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 interface TokenInterface extends IOAuth2Token
 {
-    /**
-     * @param int $timestamp
-     */
-    public function setExpiresAt($timestamp);
+    public function setExpiresAt(int $timestamp): void;
 
-    /**
-     * @return int
-     */
-    public function getExpiresAt();
+    public function getExpiresAt(): int;
 
-    /**
-     * @param string $token
-     */
-    public function setToken($token);
+    public function setToken(string $token): void;
 
-    /**
-     * @param string $scope
-     */
-    public function setScope($scope);
+    public function setScope(?string $scope): void;
 
-    public function setUser(UserInterface $user);
+    public function setUser(UserInterface $user): void;
 
-    /**
-     * @return UserInterface
-     */
-    public function getUser();
+    public function getUser(): UserInterface;
 
-    public function setClient(ClientInterface $client);
+    public function setClient(ClientInterface $client): void;
 }

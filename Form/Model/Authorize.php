@@ -18,35 +18,17 @@ namespace FOS\OAuthServerBundle\Form\Model;
  */
 class Authorize
 {
-    /**
-     * @var bool
-     */
-    public $accepted;
+    public bool $accepted;
 
-    /**
-     * @var string
-     */
-    public $client_id;
+    public string $client_id;
 
-    /**
-     * @var string
-     */
-    public $response_type;
+    public string $response_type;
 
-    /**
-     * @var string
-     */
-    public $redirect_uri;
+    public string $redirect_uri;
 
-    /**
-     * @var string
-     */
-    public $state;
+    public string $state;
 
-    /**
-     * @var string
-     */
-    public $scope;
+    public string $scope;
 
     public function __construct(bool $accepted, array $query = [])
     {

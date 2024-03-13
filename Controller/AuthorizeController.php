@@ -40,60 +40,27 @@ use Twig\Environment as TwigEnvironment;
  */
 class AuthorizeController
 {
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
-    /**
-     * @var SessionInterface
-     */
-    private $session;
-
-    /**
-     * @var Form
-     */
-    private $authorizeForm;
-
-    /**
-     * @var AuthorizeFormHandler
-     */
-    private $authorizeFormHandler;
-
-    /**
-     * @var OAuth2
-     */
-    private $oAuth2Server;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var TwigEnvironment
-     */
-    private $twig;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
-
-    /**
-     * @var ClientManagerInterface
-     */
-    private $clientManager;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    protected ?ClientInterface $client = null;
+    
+    protected SessionInterface $session;
+    
+    protected Form $authorizeForm;
+    
+    protected AuthorizeFormHandler $authorizeFormHandler;
+    
+    protected OAuth2 $oAuth2Server;
+    
+    protected RequestStack $requestStack;
+    
+    protected TokenStorageInterface $tokenStorage;
+    
+    protected TwigEnvironment $twig;
+    
+    protected UrlGeneratorInterface $router;
+    
+    protected ClientManagerInterface $clientManager;
+    
+    protected EventDispatcherInterface $eventDispatcher;
 
     /**
      * This controller had been made as a service due to support symfony 4 where all* services are private by default.
@@ -112,11 +79,10 @@ class AuthorizeController
         UrlGeneratorInterface $router,
         ClientManagerInterface $clientManager,
         EventDispatcherInterface $eventDispatcher,
-        TwigEnvironment $twig,
-        SessionInterface $session = null
+        TwigEnvironment $twig
     ) {
         $this->requestStack = $requestStack;
-        $this->session = $session;
+        $this->session = $requestStack->getSession();
         $this->authorizeForm = $authorizeForm;
         $this->authorizeFormHandler = $authorizeFormHandler;
         $this->oAuth2Server = $oAuth2Server;
@@ -130,9 +96,9 @@ class AuthorizeController
     /**
      * Authorize.
      */
-    public function authorizeAction(Request $request)
+    public function authorizeAction(Request $request): Response
     {
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $this->tokenStorage->getToken() ? $this->tokenStorage->getToken()->getUser() : null;
 
         if (!$user instanceof UserInterface) {
             throw new AccessDeniedException('This user does not have access to this section.');
@@ -165,10 +131,7 @@ class AuthorizeController
         ]);
     }
 
-    /**
-     * @return Response
-     */
-    protected function processSuccess(UserInterface $user, AuthorizeFormHandler $formHandler, Request $request)
+    protected function processSuccess(UserInterface $user, AuthorizeFormHandler $formHandler, Request $request): Response
     {
         if ($this->session && true === $this->session->get('_fos_oauth_server.ensure_logout')) {
             $this->tokenStorage->setToken(null);
@@ -179,7 +142,7 @@ class AuthorizeController
 
         $formName = $this->authorizeForm->getName();
         if (!$request->query->all() && $request->request->has($formName)) {
-            $request->query->add($request->request->get($formName));
+            $request->query->add($request->request->all($formName));
         }
 
         try {
@@ -193,10 +156,8 @@ class AuthorizeController
 
     /**
      * Generate the redirection url when the authorize is completed.
-     *
-     * @return string
      */
-    protected function getRedirectionUrl(UserInterface $user)
+    protected function getRedirectionUrl(UserInterface $user): string
     {
         return $this->router->generate('fos_oauth_server_profile_show');
     }
@@ -204,17 +165,20 @@ class AuthorizeController
     /**
      * @return ClientInterface
      */
-    protected function getClient()
+    protected function getClient(): ClientInterface
     {
         if (null !== $this->client) {
             return $this->client;
         }
+        $request = $this->getCurrentRequest();
 
-        if (null === $request = $this->getCurrentRequest()) {
+        if (null === $request) {
             throw new NotFoundHttpException('Client not found.');
         }
 
-        if (null === $clientId = $request->get('client_id')) {
+        $clientId = $request->get('client_id');
+
+        if (null === $clientId) {
             $formData = $request->get($this->authorizeForm->getName(), []);
             $clientId = isset($formData['client_id']) ? $formData['client_id'] : null;
         }
@@ -236,9 +200,9 @@ class AuthorizeController
     }
 
     /**
-     * @return Request|null
+     * @throws \RuntimeException
      */
-    private function getCurrentRequest()
+    private function getCurrentRequest(): ?Request
     {
         $request = $this->requestStack->getCurrentRequest();
         if (null === $request) {
