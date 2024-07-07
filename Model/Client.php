@@ -16,9 +16,9 @@ namespace FOS\OAuthServerBundle\Model;
 use FOS\OAuthServerBundle\Util\Random;
 use OAuth2\OAuth2;
 
-class Client implements ClientInterface
+abstract class Client implements ClientInterface
 {
-    protected int $id;
+    protected $id;
 
     protected string $randomId;
 
@@ -36,7 +36,7 @@ class Client implements ClientInterface
         $this->setSecret(Random::generateToken());
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }

@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class Token implements TokenInterface
 {
-    protected int $id;
+    protected $id;
     
     protected ClientInterface $client;
     
@@ -29,7 +29,7 @@ class Token implements TokenInterface
     
     protected UserInterface $user;
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
