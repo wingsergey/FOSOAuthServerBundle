@@ -108,4 +108,19 @@ class Client implements ClientInterface
 
 		return $this->getRandomId();
 	}
+
+	public function getPassword()
+	{
+		// TODO: Implement getPassword() method.
+	}
+
+	public function getSalt()
+	{
+		// TODO: Implement getSalt() method.
+	}
+
+	public function getUsername()
+	{
+		// TODO: Implement getUsername() method.
+	}
 }
