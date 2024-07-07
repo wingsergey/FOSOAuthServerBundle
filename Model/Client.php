@@ -16,7 +16,7 @@ namespace FOS\OAuthServerBundle\Model;
 use FOS\OAuthServerBundle\Util\Random;
 use OAuth2\OAuth2;
 
-abstract class Client implements ClientInterface
+class Client implements ClientInterface
 {
     protected $id;
 
@@ -90,4 +90,22 @@ abstract class Client implements ClientInterface
     {
         return $this->allowedGrantTypes;
     }
+
+	public function getRoles(): array
+	{
+		// TODO: Implement getRoles() method.
+		return [];
+	}
+
+	public function eraseCredentials()
+	{
+		// TODO: Implement eraseCredentials() method.
+	}
+
+	public function getUserIdentifier(): string
+	{
+		// TODO: Implement getUserIdentifier() method.
+
+		return $this->getRandomId();
+	}
 }
