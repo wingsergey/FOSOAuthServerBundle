@@ -24,25 +24,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class AuthorizeFormHandler
 {
-    /**
-     * @var FormInterface
-     */
-    protected $form;
+    protected FormInterface $form;
+    
+    protected ContainerInterface $container;
 
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    private RequestStack|Request|null $requestStack;
 
-    /**
-     * @var RequestStack|Request|null
-     */
-    private $requestStack;
-
-    /**
-     * @param Request|RequestStack $requestStack
-     */
-    public function __construct(FormInterface $form, $requestStack = null)
+    public function __construct(FormInterface $form, RequestStack|Request|null $requestStack = null)
     {
         if (null !== $requestStack && !$requestStack instanceof RequestStack && !$requestStack instanceof Request) {
             throw new \InvalidArgumentException(sprintf('Argument 2 of %s must be an instanceof RequestStack or Request', __CLASS__));
@@ -57,25 +45,22 @@ class AuthorizeFormHandler
      *
      * @param ContainerInterface|null $container A ContainerInterface instance or null
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setContainer(?ContainerInterface $container = null): void
     {
         $this->container = $container;
     }
 
-    public function isAccepted()
+    public function isAccepted(): bool
     {
         return $this->form->getData()->accepted;
     }
 
-    public function isRejected()
+    public function isRejected(): bool
     {
         return !$this->form->getData()->accepted;
     }
 
-    /**
-     * @return bool
-     */
-    public function process()
+    public function process(): bool
     {
         $request = $this->getCurrentRequest();
 
@@ -101,9 +86,9 @@ class AuthorizeFormHandler
         return true;
     }
 
-    public function getScope()
+    public function getScope(): string
     {
-        return $this->form->getData()->scope;
+        return $this->form->getData()->scope ?? '';
     }
 
     /**
@@ -112,8 +97,9 @@ class AuthorizeFormHandler
      * @todo finishClientAuthorization() is a bit odd since it accepts $data
      *       but then proceeds to ignore it and forces everything to be in $request->query
      */
-    protected function onSuccess()
+    protected function onSuccess(): void
     {
+        /*
         $_GET = [
             'client_id' => $this->form->getData()->client_id,
             'response_type' => $this->form->getData()->response_type,
@@ -121,9 +107,10 @@ class AuthorizeFormHandler
             'state' => $this->form->getData()->state,
             'scope' => $this->form->getData()->scope,
         ];
+        */
     }
 
-    private function getCurrentRequest()
+    private function getCurrentRequest(): Request|string
     {
         if (null === $this->requestStack) {
             return $this->container->get('request');

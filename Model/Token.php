@@ -17,69 +17,39 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class Token implements TokenInterface
 {
-    /**
-     * @var int
-     */
-    protected $id;
+    protected int $id;
+    
+    protected ClientInterface $client;
+    
+    protected string $token;
+    
+    protected int $expiresAt;
+    
+    protected ?string $scope;
+    
+    protected UserInterface $user;
 
-    /**
-     * @var ClientInterface
-     */
-    protected $client;
-
-    /**
-     * @var string
-     */
-    protected $token;
-
-    /**
-     * @var int
-     */
-    protected $expiresAt;
-
-    /**
-     * @var string
-     */
-    protected $scope;
-
-    /**
-     * @var UserInterface
-     */
-    protected $user;
-
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getClientId()
+    public function getClientId(): string
     {
         return $this->getClient()->getPublicId();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setExpiresAt($timestamp)
+    public function setExpiresAt(int $timestamp): void
     {
         $this->expiresAt = $timestamp;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getExpiresAt()
+    public function getExpiresAt(): int
     {
         return $this->expiresAt;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getExpiresIn()
+    public function getExpiresIn(): int
     {
         if ($this->expiresAt) {
             return $this->expiresAt - time();
@@ -88,10 +58,7 @@ class Token implements TokenInterface
         return PHP_INT_MAX;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasExpired()
+    public function hasExpired(): bool
     {
         if ($this->expiresAt) {
             return time() > $this->expiresAt;
@@ -100,74 +67,47 @@ class Token implements TokenInterface
         return false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setToken($token)
+    public function setToken(string $token): void
     {
         $this->token = $token;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getToken()
+    public function getToken(): string
     {
         return $this->token;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setScope($scope)
+    public function setScope(?string $scope): void
     {
         $this->scope = $scope;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getScope()
+    public function getScope(): string|null
     {
         return $this->scope;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUser(UserInterface $user)
+    public function setUser(UserInterface $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUser()
+    public function getUser(): UserInterface
     {
         return $this->user;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getData()
+    public function getData(): mixed
     {
         return $this->getUser();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setClient(ClientInterface $client)
+    public function setClient(ClientInterface $client): void
     {
         $this->client = $client;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getClient()
+    public function getClient(): ClientInterface
     {
         return $this->client;
     }

@@ -91,7 +91,7 @@ class TokenManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn($randomResult)
         ;
 
-        $this->assertSame($randomResult, $this->instance->findTokenByToken($randomToken));
+        $this->assertSame($randomResult, $this->instance->findTokenByToken((string) $randomToken));
     }
 
     public function testUpdateTokenPersistsAndFlushes(): void

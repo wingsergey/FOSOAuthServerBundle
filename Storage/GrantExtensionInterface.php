@@ -23,5 +23,5 @@ interface GrantExtensionInterface
     /**
      * @see OAuth2\IOAuth2GrantExtension::checkGrantExtension
      */
-    public function checkGrantExtension(IOAuth2Client $client, array $inputData, array $authHeaders);
+    public function checkGrantExtension(IOAuth2Client $client, array $inputData, array $authHeaders): bool|array;
 }

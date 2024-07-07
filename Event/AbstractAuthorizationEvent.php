@@ -19,20 +19,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AbstractAuthorizationEvent extends Event
 {
-    /**
-     * @var UserInterface
-     */
-    private $user;
+    private UserInterface $user;
 
-    /**
-     * @var ClientInterface
-     */
-    private $client;
+    private ClientInterface $client;
 
-    /**
-     * @var bool
-     */
-    private $isAuthorizedClient;
+    private bool $isAuthorizedClient;
 
     public function __construct(UserInterface $user, ClientInterface $client, bool $isAuthorizedClient = false)
     {
@@ -46,7 +37,7 @@ class AbstractAuthorizationEvent extends Event
         return $this->user;
     }
 
-    public function setAuthorizedClient(bool $authorized)
+    public function setAuthorizedClient(bool $authorized): void
     {
         $this->isAuthorizedClient = $authorized;
     }

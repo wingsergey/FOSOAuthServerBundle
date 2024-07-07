@@ -20,22 +20,13 @@ use FOS\OAuthServerBundle\Model\AuthCodeManager as BaseAuthCodeManager;
 
 class AuthCodeManager extends BaseAuthCodeManager
 {
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
+    protected DocumentManager $dm;
 
-    /**
-     * @var DocumentRepository
-     */
-    protected $repository;
+    protected DocumentRepository $repository;
 
-    /**
-     * @var string
-     */
-    protected $class;
+    protected string $class;
 
-    public function __construct(DocumentManager $dm, $class)
+    public function __construct(DocumentManager $dm, string $class)
     {
         // NOTE: bug in Doctrine, hinting DocumentRepository|ObjectRepository when only DocumentRepository is expected
         /** @var DocumentRepository $repository */
@@ -49,7 +40,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
@@ -57,7 +48,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function findAuthCodeBy(array $criteria)
+    public function findAuthCodeBy(array $criteria): ?AuthCodeInterface
     {
         return $this->repository->findOneBy($criteria);
     }
@@ -65,7 +56,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function updateAuthCode(AuthCodeInterface $authCode)
+    public function updateAuthCode(AuthCodeInterface $authCode): void
     {
         $this->dm->persist($authCode);
         $this->dm->flush();
@@ -74,7 +65,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function deleteAuthCode(AuthCodeInterface $authCode)
+    public function deleteAuthCode(AuthCodeInterface $authCode): void
     {
         $this->dm->remove($authCode);
         $this->dm->flush();
@@ -83,7 +74,7 @@ class AuthCodeManager extends BaseAuthCodeManager
     /**
      * {@inheritdoc}
      */
-    public function deleteExpired()
+    public function deleteExpired(): int
     {
         $result = $this
             ->repository

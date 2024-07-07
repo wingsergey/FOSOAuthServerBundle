@@ -17,39 +17,19 @@ use OAuth2\Model\IOAuth2Client;
 
 interface ClientInterface extends IOAuth2Client
 {
-    /**
-     * @param string $random
-     */
-    public function setRandomId($random);
+    public function setRandomId(string $randomId): void;
 
-    /**
-     * @return string
-     */
-    public function getRandomId();
+    public function getRandomId(): string;
 
-    /**
-     * @param string $secret
-     */
-    public function setSecret($secret);
+    public function setSecret(string $secret): void;
 
-    /**
-     * @param string $secret
-     *
-     * @return bool
-     */
-    public function checkSecret($secret);
+    public function checkSecret(string $secret): bool;
 
-    /**
-     * @return string
-     */
-    public function getSecret();
+    public function getSecret(): string;
 
-    public function setRedirectUris(array $redirectUris);
+    public function setRedirectUris(array $redirectUris): void;
 
-    public function setAllowedGrantTypes(array $grantTypes);
+    public function setAllowedGrantTypes(array $grantTypes): void;
 
-    /**
-     * @return array
-     */
-    public function getAllowedGrantTypes();
+    public function getAllowedGrantTypes(): array;
 }

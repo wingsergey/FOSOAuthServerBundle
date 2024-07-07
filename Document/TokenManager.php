@@ -20,20 +20,11 @@ use FOS\OAuthServerBundle\Model\TokenManager as BaseTokenManager;
 
 class TokenManager extends BaseTokenManager
 {
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
+    protected DocumentManager $dm;
 
-    /**
-     * @var DocumentRepository
-     */
-    protected $repository;
+    protected DocumentRepository $repository;
 
-    /**
-     * @var string
-     */
-    protected $class;
+    protected string $class;
 
     public function __construct(DocumentManager $dm, $class)
     {
@@ -49,7 +40,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
@@ -57,7 +48,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function findTokenBy(array $criteria)
+    public function findTokenBy(array $criteria): ?TokenInterface
     {
         return $this->repository->findOneBy($criteria);
     }
@@ -65,7 +56,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function updateToken(TokenInterface $token)
+    public function updateToken(TokenInterface $token): void
     {
         $this->dm->persist($token);
         $this->dm->flush();
@@ -74,7 +65,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function deleteToken(TokenInterface $token)
+    public function deleteToken(TokenInterface $token): void
     {
         $this->dm->remove($token);
         $this->dm->flush();
@@ -83,7 +74,7 @@ class TokenManager extends BaseTokenManager
     /**
      * {@inheritdoc}
      */
-    public function deleteExpired()
+    public function deleteExpired(): int
     {
         $result = $this
             ->repository

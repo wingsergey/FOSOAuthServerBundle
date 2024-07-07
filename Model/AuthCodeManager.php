@@ -15,10 +15,7 @@ namespace FOS\OAuthServerBundle\Model;
 
 abstract class AuthCodeManager implements AuthCodeManagerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function createAuthCode()
+    public function createAuthCode(): AuthCodeInterface
     {
         $class = $this->getClass();
 
@@ -28,7 +25,7 @@ abstract class AuthCodeManager implements AuthCodeManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function findAuthCodeByToken($token)
+    public function findAuthCodeByToken(string $token): ?AuthCodeInterface
     {
         return $this->findAuthCodeBy(['token' => $token]);
     }

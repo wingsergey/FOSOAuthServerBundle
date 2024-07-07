@@ -17,68 +17,54 @@ use FOS\OAuthServerBundle\Security\Authentication\Token\OAuthToken;
 use OAuth2\OAuth2;
 use OAuth2\OAuth2AuthenticateException;
 use OAuth2\OAuth2ServerException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
 /**
  * OAuthProvider class.
  *
  * @author  Arnaud Le Blanc <arnaud.lb@gmail.com>
  */
-class OAuthProvider implements AuthenticationProviderInterface
+class OAuthProvider extends AbstractAuthenticator
 {
-    /**
-     * @var UserProviderInterface
-     */
-    protected $userProvider;
-    /**
-     * @var OAuth2
-     */
-    protected $serverService;
-    /**
-     * @var UserCheckerInterface
-     */
-    protected $userChecker;
+    protected UserProviderInterface $userProvider;
+
+    protected OAuth2 $serverService;
+
+    protected UserCheckerInterface $userChecker;
 
     /**
      * @param UserProviderInterface $userProvider  the user provider
      * @param OAuth2                $serverService the OAuth2 server service
      * @param UserCheckerInterface  $userChecker   The Symfony User Checker for Pre and Post auth checks
      */
-    public function __construct(UserProviderInterface $userProvider, OAuth2 $serverService, UserCheckerInterface $userChecker)
-    {
+    public function __construct(
+        UserProviderInterface $userProvider,
+        OAuth2 $serverService,
+        UserCheckerInterface $userChecker
+    ) {
         $this->userProvider = $userProvider;
         $this->serverService = $serverService;
         $this->userChecker = $userChecker;
     }
 
-    /**
-     * @param OAuthToken&TokenInterface $token
-     *
-     * @return OAuthToken|null
-     */
-    public function authenticate(TokenInterface $token)
+    public function authenticate(Request $request): Passport
     {
-        if (!$this->supports($token)) {
-            // note: since strict types in PHP 7, return; and return null; are not the same
-            // Symfony's interface says to "never return null", but return; is still technically null
-            // PHPStan treats return; as return (void);
-            return null;
-        }
+        $token = $this->createTokenFromRequest($request);
 
         try {
             $tokenString = $token->getToken();
 
-            // TODO: this is nasty, create a proper interface here
-            /** @var OAuthToken&TokenInterface&\OAuth2\Model\IOAuth2AccessToken $accessToken */
             $accessToken = $this->serverService->verifyAccessToken($tokenString);
-
-            $scope = $accessToken->getScope();
             $user = $accessToken->getUser();
 
             if (null !== $user) {
@@ -87,23 +73,7 @@ class OAuthProvider implements AuthenticationProviderInterface
                 } catch (AccountStatusException $e) {
                     throw new OAuth2AuthenticateException(Response::HTTP_UNAUTHORIZED, OAuth2::TOKEN_TYPE_BEARER, $this->serverService->getVariable(OAuth2::CONFIG_WWW_REALM), 'access_denied', $e->getMessage());
                 }
-
-                $token->setUser($user);
             }
-
-            $roles = (null !== $user) ? $user->getRoles() : [];
-
-            if (!empty($scope)) {
-                foreach (explode(' ', $scope) as $role) {
-                    $roles[] = 'ROLE_'.mb_strtoupper($role);
-                }
-            }
-
-            $roles = array_unique($roles, SORT_REGULAR);
-
-            $token = new OAuthToken($roles);
-            $token->setAuthenticated(true);
-            $token->setToken($tokenString);
 
             if (null !== $user) {
                 try {
@@ -111,23 +81,43 @@ class OAuthProvider implements AuthenticationProviderInterface
                 } catch (AccountStatusException $e) {
                     throw new OAuth2AuthenticateException(Response::HTTP_UNAUTHORIZED, OAuth2::TOKEN_TYPE_BEARER, $this->serverService->getVariable(OAuth2::CONFIG_WWW_REALM), 'access_denied', $e->getMessage());
                 }
-
-                $token->setUser($user);
             }
 
-            return $token;
+            $userIdentifier = $user->getUserIdentifier();
+            $userBadge = new UserBadge($userIdentifier, function () use ($user) {
+                return $user;
+            });
+
+            return new SelfValidatingPassport($userBadge);
         } catch (OAuth2ServerException $e) {
             throw new AuthenticationException('OAuth2 authentication failed', 0, $e);
         }
-
-        throw new AuthenticationException('OAuth2 authentication failed');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supports(TokenInterface $token)
+    public function supports(Request $request): bool
     {
-        return $token instanceof OAuthToken;
+        return $this->createTokenFromRequest($request) instanceof OAuthToken;
+    }
+
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    {
+        return null;
+    }
+
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    {
+        return null;
+    }
+
+    protected function createTokenFromRequest(Request $request): OAuthToken
+    {
+        $tokenString = $request->get(OAuth2::TOKEN_PARAM_NAME);
+        $token = new OAuthToken();
+        $token->setToken($tokenString);
+
+        return $token;
     }
 }

@@ -18,26 +18,17 @@ namespace FOS\OAuthServerBundle\Model;
  */
 interface AuthCodeManagerInterface
 {
-    /**
-     * Create a new auth code.
-     *
-     * @return AuthCodeInterface
-     */
-    public function createAuthCode();
+    public function createAuthCode(): AuthCodeInterface;
 
     /**
      * Return the class name.
-     *
-     * @return string
      */
-    public function getClass();
+    public function getClass(): string;
 
     /**
      * Retrieve an auth code using a set of criteria.
-     *
-     * @return AuthCodeInterface|null
      */
-    public function findAuthCodeBy(array $criteria);
+    public function findAuthCodeBy(array $criteria): ?AuthCodeInterface;
 
     /**
      * Retrieve an auth code by its token.
@@ -46,22 +37,22 @@ interface AuthCodeManagerInterface
      *
      * @return AuthCodeInterface|null
      */
-    public function findAuthCodeByToken($token);
+    public function findAuthCodeByToken(string $token): ?AuthCodeInterface;
 
     /**
      * Update a given auth code.
      */
-    public function updateAuthCode(AuthCodeInterface $authCode);
+    public function updateAuthCode(AuthCodeInterface $authCode): void;
 
     /**
      * Delete a given auth code.
      */
-    public function deleteAuthCode(AuthCodeInterface $authCode);
+    public function deleteAuthCode(AuthCodeInterface $authCode): void;
 
     /**
      * Delete expired auth codes.
      *
      * @return int the number of auth codes deleted
      */
-    public function deleteExpired();
+    public function deleteExpired(): int;
 }

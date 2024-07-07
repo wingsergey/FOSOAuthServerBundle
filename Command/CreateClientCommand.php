@@ -24,7 +24,7 @@ class CreateClientCommand extends Command
 {
     protected static $defaultName = 'fos:oauth-server:create-client';
 
-    private $clientManager;
+    private ClientManagerInterface $clientManager;
 
     public function __construct(ClientManagerInterface $clientManager)
     {
@@ -36,7 +36,7 @@ class CreateClientCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         parent::configure();
 

@@ -20,22 +20,11 @@ use FOS\OAuthServerBundle\Model\ClientManager as BaseClientManager;
 
 class ClientManager extends BaseClientManager
 {
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
+    protected DocumentManager $dm;
+    protected DocumentRepository $repository;
+    protected string $class;
 
-    /**
-     * @var DocumentRepository
-     */
-    protected $repository;
-
-    /**
-     * @var string
-     */
-    protected $class;
-
-    public function __construct(DocumentManager $dm, $class)
+    public function __construct(DocumentManager $dm, string $class)
     {
         // NOTE: bug in Doctrine, hinting DocumentRepository|ObjectRepository when only DocumentRepository is expected
         /** @var DocumentRepository $repository */
@@ -46,35 +35,23 @@ class ClientManager extends BaseClientManager
         $this->class = $class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function findClientBy(array $criteria)
+    public function findClientBy(array $criteria): ?ClientInterface
     {
         return $this->repository->findOneBy($criteria);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function updateClient(ClientInterface $client)
+    public function updateClient(ClientInterface $client): void
     {
         $this->dm->persist($client);
         $this->dm->flush();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteClient(ClientInterface $client)
+    public function deleteClient(ClientInterface $client): void
     {
         $this->dm->remove($client);
         $this->dm->flush();
