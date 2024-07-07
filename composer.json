@@ -21,7 +21,7 @@
     "homepage": "http://friendsofsymfony.github.com",
     "require": {
         "php": "^7.2 || ^8.0",
-        "friendsofsymfony/oauth2-php": "*",
+        "wingsergey/oauth2-php": "*",
         "symfony/dependency-injection": "^4.4 || ^5.4 || ^6.4",
         "symfony/framework-bundle": "^4.4 || ^5.4 || ^6.4",
         "symfony/security-bundle": "^4.4 || ^5.4 || ^6.4",
