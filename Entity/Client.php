@@ -15,6 +15,6 @@ namespace FOS\OAuthServerBundle\Entity;
 
 use FOS\OAuthServerBundle\Model\Client as BaseClient;
 
-class Client extends BaseClient
+abstract class Client extends BaseClient
 {
 }
